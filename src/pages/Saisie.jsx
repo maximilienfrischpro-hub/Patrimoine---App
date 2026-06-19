@@ -136,13 +136,19 @@ export default function Saisie() {
                         <div style={{ fontSize: 12, fontWeight: 600, color: C.textSub, marginBottom: 6 }}>{c.label}</div>
                         <div style={{ position: 'relative' }}>
                           <input
-                            type="number"
+                            type="text"
                             inputMode="decimal"
                             placeholder="0"
                             value={vals[c.id] || ''}
                             onFocus={() => setFocused(c.id)}
                             onBlur={() => setFocused('')}
-                            onChange={e => setVals(v => ({ ...v, [c.id]: e.target.value }))}
+                            onChange={e => {
+                              const v = e.target.value
+                              // Accepte chiffres, une seule virgule ou point
+                              if (/^[0-9]*[.,]?[0-9]*$/.test(v)) {
+                                setVals(vv => ({ ...vv, [c.id]: v }))
+                              }
+                            }}
                             style={{
                               width: '100%',
                               background: isFocused ? '#EEF3FF' : C.bg,
