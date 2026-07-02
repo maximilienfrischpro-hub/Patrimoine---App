@@ -7,7 +7,7 @@ import Register from './pages/Register'
 import Patrimoine from './pages/Patrimoine'
 import Saisie from './pages/Saisie'
 import Historique from './pages/Historique'
-import Pea from './pages/PEA'
+import Pea from './pages/Pea'
 import AjouterOrdre from './pages/AjouterOrdre'
 import CarnetOrdres from './pages/CarnetOrdres'
 
