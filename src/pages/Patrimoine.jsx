@@ -390,20 +390,20 @@ export default function Patrimoine() {
 
       {/* ── BOTTOM NAV ── */}
       <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 430, background: C.surface, borderTop: `1px solid ${C.border}`, display: 'flex', justifyContent: 'space-around', padding: '10px 0 16px', zIndex: 40 }}>
-        {[
-          { id: 'patrimoine', icon: '📊', label: 'Patrimoine' },
-          { id: 'pea',        icon: '📈', label: 'PEA' },
-          { id: 'immo',       icon: '🏠', label: 'Immo' },
-          { id: 'objectifs',  icon: '🎯', label: 'Objectifs' },
-        ].map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '0 12px' }}>
-            <span style={{ fontSize: 22 }}>{tab.icon}</span>
-            <span style={{ fontSize: 10, fontWeight: 600, color: activeTab === tab.id ? C.blue : C.muted }}>
-              {tab.label}
-            </span>
-          </button>
-        ))}
+      {[
+  { id: 'patrimoine', icon: '📊', label: 'Patrimoine', action: () => setActiveTab('patrimoine') },
+  { id: 'pea',        icon: '📈', label: 'PEA',        action: () => navigate('/pea') },
+  { id: 'immo',       icon: '🏠', label: 'Immo',       action: () => setActiveTab('immo') },
+  { id: 'objectifs',  icon: '🎯', label: 'Objectifs',  action: () => setActiveTab('objectifs') },
+].map(tab => (
+  <button key={tab.id} onClick={tab.action}
+    style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '0 12px' }}>
+    <span style={{ fontSize: 22 }}>{tab.icon}</span>
+    <span style={{ fontSize: 10, fontWeight: 600, color: activeTab === tab.id ? C.blue : C.muted }}>
+      {tab.label}
+    </span>
+  </button>
+))}
       </div>
     </div>
   )

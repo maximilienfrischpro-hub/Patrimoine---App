@@ -7,6 +7,10 @@ import Register from './pages/Register'
 import Patrimoine from './pages/Patrimoine'
 import Saisie from './pages/Saisie'
 import Historique from './pages/Historique'
+import Pea from './pages/PEA'
+import AjouterOrdre from './pages/AjouterOrdre'
+import CarnetOrdres from './pages/CarnetOrdres'
+
 
 export default function App() {
   const [session, setSession] = useState(undefined)
@@ -28,6 +32,9 @@ export default function App() {
         <Route path="/patrimoine" element={session ? <Patrimoine /> : <Navigate to="/" />} />
         <Route path="/saisie" element={session ? <Saisie /> : <Navigate to="/" />} />
         <Route path="/historique" element={session ? <Historique /> : <Navigate to="/" />} />
+        <Route path="/pea" element={session ? <Pea /> : <Navigate to="/" />} />
+        <Route path="/pea/ajouter" element={session ? <AjouterOrdre /> : <Navigate to="/" />} />
+        <Route path="/pea/carnet-ordres" element={session ? <CarnetOrdres /> : <Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   )
