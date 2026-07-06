@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { IconTrash } from '@tabler/icons-react'
 
 const C = {
   bg:      '#F4F6FB',
@@ -70,7 +71,6 @@ export default function Historique() {
     return entry.total - sorted[idx - 1].total
   }
 
-  // Touch handlers for swipe
   const handleTouchStart = (e, id) => setTouchStart({ x: e.touches[0].clientX, id })
   const handleTouchEnd = (e) => {
     if (!touchStart) return
@@ -103,7 +103,7 @@ export default function Historique() {
         </div>
         {saisies.length > 0 && (
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>
-            Swipe une ligne vers la gauche pour supprimer
+            Swipe vers la gauche pour supprimer
           </div>
         )}
       </div>
@@ -121,20 +121,25 @@ export default function Historique() {
             const isSwiped = swipedId === entry.id
             return (
               <div key={entry.id} style={{ position: 'relative', marginBottom: 10, overflow: 'hidden', borderRadius: 14 }}>
-                {/* Delete background */}
+
+                {/* Fond de suppression — rouge sobre, icône Tabler */}
                 <div style={{
-                  position: 'absolute', top: 0, right: 0, bottom: 0, width: 80,
-                  background: C.red, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer',
+                  position: 'absolute', top: 0, right: 0, bottom: 0, width: 72,
+                  background: '#B91C1C',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', borderRadius: 14,
                 }} onClick={() => setDeleteConfirm(entry.id)}>
-                  <span style={{ fontSize: 22 }}>🗑️</span>
+                  <IconTrash size={20} color="rgba(255,255,255,0.9)" stroke={1.75} />
                 </div>
 
                 {/* Card */}
                 <div
                   onTouchStart={e => handleTouchStart(e, entry.id)}
                   onTouchEnd={handleTouchEnd}
-                  onClick={() => !isSwiped && setDetailEntry(entry)}
+                  onClick={() => {
+                    if (isSwiped) { setSwipedId(null); return }
+                    setDetailEntry(entry)
+                  }}
                   style={{
                     background: C.surface,
                     borderRadius: 14,
@@ -144,8 +149,8 @@ export default function Historique() {
                     gap: 14,
                     cursor: 'pointer',
                     boxShadow: '0 1px 4px rgba(15,27,60,.06)',
-                    transform: isSwiped ? 'translateX(-80px)' : 'translateX(0)',
-                    transition: 'transform .2s',
+                    transform: isSwiped ? 'translateX(-72px)' : 'translateX(0)',
+                    transition: 'transform .2s ease',
                     position: 'relative',
                   }}>
                   <div style={{ background: C.blueSoft, borderRadius: 12, padding: '7px 10px', textAlign: 'center', minWidth: 46, flexShrink: 0 }}>
@@ -174,11 +179,12 @@ export default function Historique() {
         )}
       </div>
 
-      {/* ── DELETE CONFIRM MODAL ── */}
+      {/* Modale confirmation suppression */}
       {deleteConfirm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
-          onClick={() => setDeleteConfirm(null)}>
-          <div style={{ background: C.surface, borderRadius: 20, padding: 24, maxWidth: 320, width: '100%' }} onClick={e => e.stopPropagation()}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+          onClick={() => { setDeleteConfirm(null); setSwipedId(null) }}>
+          <div style={{ background: C.surface, borderRadius: 20, padding: 24, maxWidth: 320, width: '100%' }}
+            onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 8, textAlign: 'center' }}>
               Supprimer cette saisie ?
             </div>
@@ -186,12 +192,12 @@ export default function Historique() {
               Cette action est irréversible.
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setDeleteConfirm(null)}
+              <button onClick={() => { setDeleteConfirm(null); setSwipedId(null) }}
                 style={{ flex: 1, background: C.bg, border: `1.5px solid ${C.border}`, borderRadius: 12, padding: '12px', fontSize: 14, fontWeight: 700, color: C.textSub, cursor: 'pointer' }}>
                 Annuler
               </button>
               <button onClick={() => handleDelete(deleteConfirm)}
-                style={{ flex: 1, background: C.red, border: 'none', borderRadius: 12, padding: '12px', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer' }}>
+                style={{ flex: 1, background: '#B91C1C', border: 'none', borderRadius: 12, padding: '12px', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer' }}>
                 Supprimer
               </button>
             </div>
@@ -199,19 +205,17 @@ export default function Historique() {
         </div>
       )}
 
-      {/* ── DETAIL MODAL ── */}
+      {/* Modale détail */}
       {detailEntry && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 100, display: 'flex', alignItems: 'flex-end' }}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 100, display: 'flex', alignItems: 'flex-end' }}
           onClick={() => setDetailEntry(null)}>
           <div style={{ width: '100%', maxWidth: 430, margin: '0 auto', background: C.surface, borderRadius: '24px 24px 0 0', padding: '20px 0 36px', maxHeight: '80vh', overflowY: 'auto' }}
             onClick={e => e.stopPropagation()}>
             <div style={{ width: 40, height: 4, background: C.border, borderRadius: 2, margin: '0 auto 20px' }} />
-
             <div style={{ padding: '0 20px 16px' }}>
               <div style={{ fontSize: 12, color: C.muted, marginBottom: 2 }}>{fmtDateLong(detailEntry.date)}</div>
               <div style={{ fontSize: 28, fontWeight: 900, color: C.text }}>{fmt(detailEntry.total)}</div>
             </div>
-
             <div style={{ padding: '0 20px' }}>
               <div style={{ background: C.bg, borderRadius: 14, overflow: 'hidden' }}>
                 {COMPTES.map((c, i) => {
@@ -226,10 +230,10 @@ export default function Historique() {
                   )
                 })}
               </div>
-
-              <button onClick={() => { setDeleteConfirm(detailEntry.id); setDetailEntry(null); }}
-                style={{ width: '100%', marginTop: 16, background: 'none', border: `1.5px solid ${C.border}`, borderRadius: 14, padding: '14px', fontSize: 14, fontWeight: 700, color: C.red, cursor: 'pointer' }}>
-                🗑️ Supprimer cette saisie
+              <button onClick={() => { setDeleteConfirm(detailEntry.id); setDetailEntry(null) }}
+                style={{ width: '100%', marginTop: 16, background: 'none', border: `1.5px solid ${C.border}`, borderRadius: 14, padding: '14px', fontSize: 14, fontWeight: 700, color: C.red, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <IconTrash size={16} color={C.red} stroke={1.75} />
+                Supprimer cette saisie
               </button>
             </div>
           </div>
